@@ -1,0 +1,99 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "description": "AWS + NodeJS. Task 3",
+      "version": "1.0.0",
+      "title": "Pizza Shop"
+    },
+    "host": "mxuyp1483j.execute-api.eu-west-1.amazonaws.com",
+    "basePath": "/dev",
+    "schemes": [
+      "https"
+    ],
+    "paths": {
+      "/pizzas": {
+        "get": {
+          "tags": [
+            "pizzas"
+          ],
+          "summary": "Show all pizzas",
+          "operationId": "getAllPizzas",
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Pizza"
+                }
+              }
+            },
+            "500": {
+              "description": "Some server error."
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "pizzas"
+          ],
+          "summary": "Show one pizza",
+          "operationId": "getPizzaByID",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "query",
+              "name": "id",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "$ref": "#/definitions/Pizza"
+              }
+            },
+            "500": {
+              "description": "Some server error."
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Pizza": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "2"
+          },
+          "title": {
+            "type": "string",
+            "example": "Pipa"
+          },
+          "description": {
+            "type": "string",
+            "example": "Pipa"
+          },
+          "price": {
+            "type": "integer",
+            "example": 10
+          }
+        },
+        "xml": {
+          "name": "Pizza"
+        }
+      }
+    }
+  }
