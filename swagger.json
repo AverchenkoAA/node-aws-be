@@ -31,37 +31,47 @@
                 }
               }
             },
+            "404": {
+              "description": "No result."
+            },
             "500": {
               "description": "Some server error."
             }
           }
-        },
-        "post": {
+        }
+      },
+      "/pizzas/{id}": {
+        "get": {
           "tags": [
             "pizzas"
           ],
-          "summary": "Show one pizza",
+          "summary": "Show all pizzas",
           "operationId": "getPizzaByID",
-          "consumes": [
-            "application/json"
-          ],
           "produces": [
             "application/json"
           ],
           "parameters": [
             {
-              "in": "query",
               "name": "id",
+              "in": "path",
+              "description": "Return pizza by it ID",
               "required": true,
-              "type": "string"
+              "type": "string",
+              "default": "2"
             }
           ],
           "responses": {
             "200": {
               "description": "successful operation",
               "schema": {
-                "$ref": "#/definitions/Pizza"
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Pizza"
+                }
               }
+            },
+            "404": {
+              "description": "No result."
             },
             "500": {
               "description": "Some server error."
