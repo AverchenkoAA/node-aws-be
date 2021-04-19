@@ -5,7 +5,7 @@ export async function getPizzaByID(event: any) {
     try {
         const id = event.pathParameters.id;
         const service = new PizzaService();
-        const pizza = service.getPizzaByID(id);
+        const pizza = await service.getPizzaByID(id);
 
         if (!pizza) {
             LOGGER.warn(`[getAllPizzas] Ask undefined pizza ID`);

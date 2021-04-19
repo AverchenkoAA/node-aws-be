@@ -4,7 +4,7 @@ import { HEADER, LOGGER } from '../const';
 export async function getAllPizzas(event: any) {
     try {
         const service = new PizzaService();
-        const pizzas = service.getAll();
+        const pizzas = await service.getAll();
 
         if (!pizzas) {
             LOGGER.warn(`[getAllPizzas] Empty pizzas DB`);

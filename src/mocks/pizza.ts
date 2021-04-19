@@ -4,7 +4,7 @@ export const pizzaMockDB: Pizza[] = [
     {
         id: "1",
         title: 'Carbonara',
-        // weight: 350,
+        count: 350,
         description:'Carbonara',
         price: 15,
         // srceen: 'simple-url-screen-carbonara'
@@ -13,7 +13,7 @@ export const pizzaMockDB: Pizza[] = [
         id: "2",
         title: 'Pipa',
         description:'Pipa',
-        // weight: 400,
+        count: 400,
         price: 10,
         // srceen: 'simple-url-screen-pipa'
     },
@@ -21,7 +21,7 @@ export const pizzaMockDB: Pizza[] = [
         id: "3",
         title: 'Pupro',
         description:'Pupro',
-        // weight: 250,
+        count: 250,
         price: 13,
         // srceen: 'simple-url-screen-pupro'
     },
@@ -29,7 +29,7 @@ export const pizzaMockDB: Pizza[] = [
         id: "4",
         title: 'Allatriste',
         description:'Allatriste',
-        // weight: 500,
+        count: 500,
         price: 20,
         // srceen: 'simple-url-screen-allatriste'
     }
