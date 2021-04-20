@@ -1,4 +1,4 @@
-import { Pizza } from '../entities/pizza';
+import { Pizza } from '../../entities/pizza';
 
 export const pizzaMockDB: Pizza[] = [
     {
