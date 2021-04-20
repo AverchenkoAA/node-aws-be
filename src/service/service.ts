@@ -9,17 +9,15 @@ export class PizzaService {
     constructor() {
         this.init();
     }
-    /**
-     * init
-     */
-    public init(): Client {
+
+    private init(): Client {
         if (!this._connection) {
             this._connection = new Client(dbOptions);
         }
         return this._connection;
     }
 
-    public async getAll(): Promise<Pizza[]> {
+    public async getAll(): Promise<Pizza[] | null> {
         try {
             await this._connection.connect();
 
@@ -29,7 +27,7 @@ export class PizzaService {
             return res.rows;
         } catch (error) {
             LOGGER.error(`[PizzaService.getAll()] - ${error}`);
-            return [];
+            return null;
         } finally {
             await this._connection.end()
         }

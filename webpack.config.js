@@ -16,6 +16,7 @@ module.exports = (async () => {
             patterns: [
                 { from: 'dist/const/*.js' },
                 { from: 'dist/service/*.js' },
+                { from: 'dist/mainHandler/*.js' },
             ]
         })
     ],
