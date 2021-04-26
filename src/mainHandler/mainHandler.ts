@@ -2,9 +2,9 @@ import { HEADER, LOGGER } from "../const";
 import { Pizza, Response } from "../entities";
 
 export interface Service {
-    getAll(): Promise<Pizza[] | null>,
-    getPizzaByID(id: string): Promise<Pizza | null>,
-    insertOne(pizza: Pizza): Promise<string | null>,
+    getAll(): Promise<Pizza[] | null| Error>,
+    getPizzaByID(id: string): Promise<Pizza | null | Error>,
+    insertOne(pizza: Pizza): Promise<string | null | Error>,
 }
 
 export class MainHandler {
@@ -13,6 +13,10 @@ export class MainHandler {
     public async getAllPizzas(event: any): Promise<Response> {
         try {
             const pizzas = await this._service.getAll();
+
+            if(pizzas instanceof Error){
+                throw new Error(pizzas.message);
+            }
 
             if (!pizzas) {
                 LOGGER.warn(`[getAllPizzas] Empty pizzas DB`);
@@ -42,6 +46,10 @@ export class MainHandler {
             const id = event.pathParameters.id;
             const pizza = await this._service.getPizzaByID(id);
 
+            if(pizza instanceof Error){
+                throw new Error(pizza.message);
+            }
+
             if (!pizza) {
                 LOGGER.warn(`[getAllPizzas] Ask undefined pizza ID`);
                 return {
@@ -67,15 +75,28 @@ export class MainHandler {
 
     public async insertOnePizza(event: any): Promise<Response> {
         try {
+
+            if (!this.isInputBodyValid(event)) {
+                return {
+                    statusCode: 400,
+                    headers: HEADER,
+                    body: JSON.stringify('Insert failed!'),
+                };
+            }
+
             const insertedPizza = JSON.parse(event.body) as Pizza;
             LOGGER.info(`[insertOnePizza] input event - ${insertedPizza}`);
 
             const pizzaId = await this._service.insertOne(insertedPizza);
 
+            if(pizzaId instanceof Error){
+                throw new Error(pizzaId.message);
+            }
+
             if (!pizzaId) {
                 LOGGER.warn(`[insertOnePizza] Insert failed!`);
                 return {
-                    statusCode: 400,
+                    statusCode: 422,
                     headers: HEADER,
                     body: JSON.stringify('Insert failed!'),
                 };
@@ -93,5 +114,23 @@ export class MainHandler {
             LOGGER.error(`[insertOnePizza] ${error}`)
             return { statusCode: 500, headers: HEADER, body: 'Some server error.' };
         }
+    }
+
+    private isInputBodyValid(event: any): boolean {
+        try {
+            const insertedPizza = JSON.parse(event.body) as Pizza;
+            if (
+                insertedPizza
+                && insertedPizza.title
+                && insertedPizza.price
+            ) {
+                return true;
+            }
+            return false;
+        } catch (error) {
+            LOGGER.error(`[checkInputBody] Wrong format!`);
+            return false;
+        }
+
     }
 }

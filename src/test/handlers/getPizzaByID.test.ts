@@ -39,7 +39,7 @@ describe('getAllPizzas', () => {
         }),
 
         it('should return 404 status code', async () => {
-            service.getPizzaByID = () => { return Promise.resolve(null) };
+            service.getPizzaByID = (id:string) => { return Promise.resolve(null) };
             event.pathParameters.id = 'errorId'
             const result = await mainHandler.getPizzaByID(event);
             expect(result.statusCode).toEqual(404);

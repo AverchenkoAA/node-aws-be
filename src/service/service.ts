@@ -17,23 +17,23 @@ export class PizzaService {
         return this._connection;
     }
 
-    public async getAll(): Promise<Pizza[] | null> {
+    public async getAll(): Promise<Pizza[] | null | Error> {
         try {
             await this._connection.connect();
 
             const query = 'SELECT id, title, description, price, s.count as count FROM public.products JOIN stocks s ON products.id = s.product_id';
 
             const res = await this._connection.query(query);
-            return res.rows;
+            return res?.rows || null;
         } catch (error) {
             LOGGER.error(`[PizzaService.getAll()] - ${error}`);
-            return null;
+            return new Error(error);
         } finally {
             await this._connection.end()
         }
     }
 
-    public async getPizzaByID(id: string): Promise<Pizza | null> {
+    public async getPizzaByID(id: string): Promise<Pizza | null | Error> {
         try {
             await this._connection.connect();
 
@@ -43,16 +43,16 @@ export class PizzaService {
                             where id=$1`;
 
             const res = await this._connection.query(query, [id]);
-            return res.rows[0];
+            return res?.rows[0] || null;
         } catch (error) {
             LOGGER.error(`[PizzaService.getPizzaByID()] - ${error}`);
-            return null;
+            return new Error(error);
         } finally {
             await this._connection.end()
         }
     }
 
-    public async insertOne(pizza: Pizza): Promise<string | null> {
+    public async insertOne(pizza: Pizza): Promise<string | null | Error> {
         try {
             await this._connection.connect();
 
@@ -65,10 +65,10 @@ export class PizzaService {
 
             const stocksRes = await this._connection.query(stocksQuery, [productId, pizza.count]);
 
-            return stocksRes.rows[0];
+            return stocksRes?.rows[0] || null;
         } catch (error) {
             LOGGER.error(`[PizzaService.insertOne()] - ${error}`);
-            return null;
+            return new Error(error);
         } finally {
             await this._connection.end()
         }
