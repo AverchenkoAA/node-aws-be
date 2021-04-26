@@ -38,6 +38,44 @@
               "description": "Some server error."
             }
           }
+        },
+        "post": {
+          "tags": [
+            "pizzas"
+          ],
+          "summary": "Show all pizzas",
+          "operationId": "insertOnePizza",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "Pizza object to inserting",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Pizza"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/InsertResponse"
+                }
+              }
+            },
+            "400": {
+              "description": "Insert failed!"
+            },
+            "500": {
+              "description": "Some server error."
+            }
+          }
         }
       },
       "/pizzas/{id}": {
@@ -57,7 +95,7 @@
               "description": "Return pizza by it ID",
               "required": true,
               "type": "string",
-              "default": "2"
+              "default": "545a5d77-9144-4a03-8a8b-95790b0c1886"
             }
           ],
           "responses": {
@@ -86,7 +124,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "example": "2"
+            "example": "545a5d77-9144-4a03-8a8b-95790b0c1886"
           },
           "title": {
             "type": "string",
@@ -99,10 +137,26 @@
           "price": {
             "type": "integer",
             "example": 10
+          },
+          "count": {
+            "type": "integer",
+            "example": 10
           }
         },
         "xml": {
           "name": "Pizza"
+        }
+      },
+      "InsertResponse": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "example": "545a5d77-9144-4a03-8a8b-95790b0c1886"
+          }
+        },
+        "xml": {
+          "name": "InsertResponse"
         }
       }
     }

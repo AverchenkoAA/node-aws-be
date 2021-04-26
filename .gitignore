@@ -10,3 +10,4 @@ coverage
 tsconfig.tsbuildinfo
 
 .webpack
+.env

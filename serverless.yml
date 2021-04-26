@@ -20,8 +20,11 @@ service: node-aws-be
 # Check out our docs for more details
 frameworkVersion: '2'
 
+useDotenv: true
+
 plugins:
   - serverless-webpack
+  - serverless-dotenv-plugin
 
 custom:
   webpack:
@@ -96,6 +99,14 @@ functions:
             parameters:
               path:
                 id: true
+  insertOnePizza:
+    handler: dist/handlers/insertOnePizza.insertOnePizza
+    events:
+      - http: 
+          path: pizzas
+          method: post
+          cors: true
+
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
