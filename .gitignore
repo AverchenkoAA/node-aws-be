@@ -5,9 +5,9 @@ jspm_packages
 # Serverless directories
 .serverless
 
-dist
-coverage
+**/dist
+**/coverage
 tsconfig.tsbuildinfo
 
-.webpack
-.env
+**/.webpack
+**/.env

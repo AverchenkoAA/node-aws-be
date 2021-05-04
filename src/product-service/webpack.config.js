@@ -41,7 +41,7 @@ module.exports = (async () => {
         {
           test: /\.(tsx?)$/,
           loader: 'ts-loader',
-          include: [path.resolve(__dirname, 'src')],
+          include: [path.resolve(__dirname, './')],
           exclude: [
             [
               path.resolve(__dirname, 'node_modules'),
