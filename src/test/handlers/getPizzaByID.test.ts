@@ -10,6 +10,8 @@ beforeEach(() => {
         getAll: () => { return Promise.resolve(pizzaMockDB) },
         getPizzaByID: () => { return Promise.resolve(pizzaMockDB[0]) },
         insertOne: () => { return Promise.resolve(pizzaMockDB[0].id) },
+        delete: () => { return Promise.resolve(pizzaMockDB[0].id) },
+        update: () => { return Promise.resolve(pizzaMockDB[0]) },
     };
     mainHandler = new MainHandler(service);
     event = {

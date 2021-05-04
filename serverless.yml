@@ -106,6 +106,24 @@ functions:
           path: pizzas
           method: post
           cors: true
+  updateOnePizza:
+    handler: dist/handlers/updateOnePizza.updateOnePizza
+    events:
+      - http: 
+          path: pizzas
+          method: put
+          cors: true
+  deleteOnePizza:
+    handler: dist/handlers/deleteOnePizza.deleteOnePizza
+    events:
+      - http: 
+          path: pizzas/{id}
+          method: delete
+          cors: true
+          request:
+            parameters:
+              path:
+                id: true
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

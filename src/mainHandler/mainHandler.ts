@@ -5,6 +5,8 @@ export interface Service {
     getAll(): Promise<Pizza[] | null| Error>,
     getPizzaByID(id: string): Promise<Pizza | null | Error>,
     insertOne(pizza: Pizza): Promise<string | null | Error>,
+    update(pizza: Pizza): Promise<Pizza | null | Error>,
+    delete(id: string): Promise<string | null | Error>
 }
 
 export class MainHandler {
@@ -116,11 +118,98 @@ export class MainHandler {
         }
     }
 
+    public async updateOnePizza(event: any): Promise<Response> {
+        try {
+
+            if (!this.isInputBodyValid(event)) {
+                return {
+                    statusCode: 400,
+                    headers: HEADER,
+                    body: JSON.stringify('Update failed!'),
+                };
+            }
+
+            const updateedPizza = JSON.parse(event.body) as Pizza;
+            LOGGER.info(`[UpdateOnePizza] input event - ${updateedPizza}`);
+
+            const pizzaId = await this._service.update(updateedPizza);
+
+            if(pizzaId instanceof Error){
+                throw new Error(pizzaId.message);
+            }
+
+            if (!pizzaId) {
+                LOGGER.warn(`[UpdateOnePizza] Update failed!`);
+                return {
+                    statusCode: 422,
+                    headers: HEADER,
+                    body: JSON.stringify('Update failed!'),
+                };
+            }
+
+            const response = {
+                statusCode: 200,
+                headers: HEADER,
+                body: JSON.stringify(pizzaId),
+            };
+
+            LOGGER.info(`[UpdateOnePizza] return prepared response - ${JSON.stringify(response)}`);
+            return response;
+        } catch (error) {
+            LOGGER.error(`[UpdateOnePizza] ${error}`)
+            return { statusCode: 500, headers: HEADER, body: 'Some server error.' };
+        }
+    }
+
+    public async deleteOnePizza(event: any): Promise<Response> {
+        try {
+            const id = event?.pathParameters?.id || null;
+
+            if (!id) {
+                return {
+                    statusCode: 400,
+                    headers: HEADER,
+                    body: JSON.stringify('Delete failed!'),
+                };
+            }
+
+            LOGGER.info(`[deleteOnePizza] input event with id - ${id}`);
+
+            const pizzaId = await this._service.delete(id);
+
+            if(pizzaId instanceof Error){
+                throw new Error(pizzaId.message);
+            }
+
+            if (!pizzaId) {
+                LOGGER.warn(`[deleteOnePizza] Update failed!`);
+                return {
+                    statusCode: 422,
+                    headers: HEADER,
+                    body: JSON.stringify('Update failed!'),
+                };
+            }
+
+            const response = {
+                statusCode: 200,
+                headers: HEADER,
+                body: JSON.stringify(`Pizza with id: ${pizzaId} - was deleted`),
+            };
+
+            LOGGER.info(`[deleteOnePizza] return prepared response - ${JSON.stringify(response)}`);
+            return response;
+        } catch (error) {
+            LOGGER.error(`[deleteOnePizza] ${error}`)
+            return { statusCode: 500, headers: HEADER, body: 'Some server error.' };
+        }
+    }
+
     private isInputBodyValid(event: any): boolean {
         try {
             const insertedPizza = JSON.parse(event.body) as Pizza;
             if (
                 insertedPizza
+                && insertedPizza.id
                 && insertedPizza.title
                 && insertedPizza.price
             ) {
