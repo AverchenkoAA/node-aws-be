@@ -11,14 +11,6 @@ module.exports = (async () => {
     target: 'node',
     mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
 
-    plugins: [
-        new CopyWebpackPlugin({
-            patterns: [
-                { from: 'handler.js' },
-            ]
-        })
-    ],
-
     resolve: {
       extensions: ['.js', '.json', '.ts'],
       symlinks: false,
@@ -33,26 +25,26 @@ module.exports = (async () => {
 
     externals: [nodeExternals()],
 
-    // module: {
-    //   rules: [
-    //     // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
-    //     {
-    //       test: /\.(tsx?)$/,
-    //       loader: 'ts-loader',
-    //       include: [path.resolve(__dirname, './handler.js')],
-    //       exclude: [
-    //         [
-    //           path.resolve(__dirname, 'node_modules'),
-    //           path.resolve(__dirname, '.serverless'),
-    //           path.resolve(__dirname, '.webpack'),
-    //         ],
-    //       ],
-    //       options: {
-    //         transpileOnly: true,
-    //         experimentalWatchApi: true,
-    //       },
-    //     },
-    //   ],
-    // },
+    module: {
+      rules: [
+        // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
+        {
+          test: /\.(tsx?)$/,
+          loader: 'ts-loader',
+          include: [path.resolve(__dirname, './')],
+          exclude: [
+            [
+              path.resolve(__dirname, 'node_modules'),
+              path.resolve(__dirname, '.serverless'),
+              path.resolve(__dirname, '.webpack'),
+            ],
+          ],
+          options: {
+            transpileOnly: true,
+            experimentalWatchApi: true,
+          },
+        },
+      ],
+    },
   };
 })();
