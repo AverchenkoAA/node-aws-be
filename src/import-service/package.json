@@ -3,11 +3,19 @@
   "version": "1.0.0",
   "description": "aws import with S3",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "deploy": "serverless deploy",
+    "build:webpack": "serverless webpack"
+  },
   "author": "AAA",
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.899.0",
-    "csv-parser": "^3.0.0"
+    "copy-webpack-plugin": "^8.1.1",
+    "csv-parser": "^3.0.0",
+    "serverless-webpack": "^5.4.2",
+    "webpack": "^5.36.2",
+    "webpack-cli": "^4.6.0",
+    "webpack-node-externals": "^3.0.0"
   }
 }

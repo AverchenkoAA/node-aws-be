@@ -22,16 +22,15 @@ service: node-aws-import
 
 # useDotenv: true
 
-# plugins:
-#   - serverless-webpack
-#   - serverless-dotenv-plugin
+plugins:
+  - serverless-webpack
 
-# custom:
-#   webpack:
-#     webpackConfig: 'webpack.config.js'   # Name of webpack configuration file
-#     includeModules: true   # Node modules configuration for packaging
-#     packager: 'npm'   # Packager that will be used to package your external modules
-#     excludeFiles: ./**/*.test.js # Provide a glob for files to ignore
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'   # Name of webpack configuration file
+    includeModules: true   # Node modules configuration for packaging
+    packager: 'npm'   # Packager that will be used to package your external modules
+    excludeFiles: ./**/*.test.js # Provide a glob for files to ignore
 
 provider:
   name: aws
@@ -40,16 +39,16 @@ provider:
   profile: personalAccount
   region: eu-west-1
 
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+  # you can overwrite defaults here
+  #  stage: dev
+  #  region: us-east-1
 
-# you can add statements to the Lambda function's IAM Role here
+  # you can add statements to the Lambda function's IAM Role here
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
-      Resource: 
+      Resource:
         - "arn:aws:s3:::aws-node-products"
     - Effect: "Allow"
       Action:
@@ -81,7 +80,7 @@ functions:
   importProductsFile:
     handler: handler.importProductsFile
     events:
-      - http: 
+      - http:
           path: import
           method: get
           cors: true
@@ -89,8 +88,16 @@ functions:
             parameters:
               querystrings:
                 name: true
-
-
+  importFileParser:
+    handler: handler.importFileParser
+    events:
+      - s3:
+          bucket: aws-node-products
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploaded/
+            - suffix: .csv
+          existing: true
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
