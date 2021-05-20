@@ -11,16 +11,6 @@ module.exports = (async () => {
     target: 'node',
     mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
 
-    plugins: [
-        new CopyWebpackPlugin({
-            patterns: [
-                { from: 'dist/const/*.js' },
-                { from: 'dist/service/*.js' },
-                { from: 'dist/mainHandler/*.js' },
-            ]
-        })
-    ],
-
     resolve: {
       extensions: ['.js', '.json', '.ts'],
       symlinks: false,
@@ -41,7 +31,7 @@ module.exports = (async () => {
         {
           test: /\.(tsx?)$/,
           loader: 'ts-loader',
-          include: [path.resolve(__dirname, 'src')],
+          include: [path.resolve(__dirname, './')],
           exclude: [
             [
               path.resolve(__dirname, 'node_modules'),
