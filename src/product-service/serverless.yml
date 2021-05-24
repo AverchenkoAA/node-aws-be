@@ -40,10 +40,23 @@ provider:
   profile: personalAccount
   region: eu-west-1
 
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+  environment:
+    SNS_ARN:
+      Ref: createProductTopic
 
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "sqs:*"
+      Resource:
+        - Fn::GetAtt:
+            - catalogItemQueue
+            - Arn
+    - Effect: "Allow"
+      Action:
+        - "sns:*"
+      Resource:
+        Ref: createProductTopic
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
 #    - Effect: "Allow"
@@ -63,6 +76,23 @@ provider:
 # you can define service wide environment variables here
 #  environment:
 #    variable1: value1
+resources:
+  Resources:
+    catalogItemQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: catalogItemQueue
+    createProductTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: createProductTopic 
+    SNSSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: aaaops1257@gmail.com
+        Protocol: email
+        TopicArn:
+          Ref: createProductTopic
 
 # you can add packaging information here
 package:
@@ -124,6 +154,15 @@ functions:
             parameters:
               path:
                 id: true
+  catalogBatchProcess:
+    handler: dist/handlers/catalogBatchProcess.catalogBatchProcess
+    events:
+      - sqs:
+          batchSize: 5
+          arn:
+            Fn::GetAtt:
+              - catalogItemQueue
+              - Arn
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

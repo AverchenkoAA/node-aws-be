@@ -1,15 +1,18 @@
 import { pizzaMockDB } from '../mocks/pizza';
 import { Service, MainHandler } from '../../mainHandler/mainHandler';
+import { Client } from 'pg';
 
 let service: Service;
 let mainHandler: MainHandler;
 let event: any;
+let connection: Client;
 
 beforeEach(() => {
     service = {
         getAll: () => { return Promise.resolve(pizzaMockDB) },
         getPizzaByID: () => { return Promise.resolve(pizzaMockDB[0]) },
         insertOne: () => { return Promise.resolve(pizzaMockDB[0].id) },
+        insertMany: () => { return Promise.resolve(null) },
         delete: () => { return Promise.resolve(pizzaMockDB[0].id) },
         update: () => { return Promise.resolve(pizzaMockDB[0]) },
     };

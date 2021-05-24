@@ -1,22 +1,25 @@
 import { HEADER, LOGGER } from "../const";
 import { Pizza, Response } from "../entities";
+import AWS from 'aws-sdk';
 
 export interface Service {
-    getAll(): Promise<Pizza[] | null| Error>,
+    getAll(): Promise<Pizza[] | null | Error>,
     getPizzaByID(id: string): Promise<Pizza | null | Error>,
     insertOne(pizza: Pizza): Promise<string | null | Error>,
+    insertMany(pizzas: Pizza[]): Promise<string | null | Error>,
     update(pizza: Pizza): Promise<Pizza | null | Error>,
     delete(id: string): Promise<string | null | Error>
 }
 
 export class MainHandler {
+
     constructor(private _service: Service) { }
 
     public async getAllPizzas(event: any): Promise<Response> {
         try {
             const pizzas = await this._service.getAll();
 
-            if(pizzas instanceof Error){
+            if (pizzas instanceof Error) {
                 throw new Error(pizzas.message);
             }
 
@@ -48,7 +51,7 @@ export class MainHandler {
             const id = event.pathParameters.id;
             const pizza = await this._service.getPizzaByID(id);
 
-            if(pizza instanceof Error){
+            if (pizza instanceof Error) {
                 throw new Error(pizza.message);
             }
 
@@ -77,7 +80,6 @@ export class MainHandler {
 
     public async insertOnePizza(event: any): Promise<Response> {
         try {
-
             if (!this.isInputBodyValid(event)) {
                 return {
                     statusCode: 400,
@@ -91,7 +93,7 @@ export class MainHandler {
 
             const pizzaId = await this._service.insertOne(insertedPizza);
 
-            if(pizzaId instanceof Error){
+            if (pizzaId instanceof Error) {
                 throw new Error(pizzaId.message);
             }
 
@@ -118,6 +120,33 @@ export class MainHandler {
         }
     }
 
+    public async catalogBatchProcess(event: any): Promise<void> {
+        console.log('Start read from SQS');
+        try {
+
+            const products = event.Records.map((record: { body: any; }) => {
+                return JSON.parse(record.body);
+            });
+            LOGGER.info(`[catalogBatchProcess] input products - ${products}`);
+
+            if (products.length === 0) { return }
+
+            const result = await this._service.insertMany(products as Pizza[]);
+            LOGGER.info(`[catalogBatchProcess] result of insert - ${result}`);
+
+            const sns = new AWS.SNS({ region: 'eu-west-1' });
+            sns.publish({
+                Subject: 'New pizzas were updated',
+                Message: JSON.stringify(products),
+                TopicArn: process.env.SNS_ARN
+            }, ()=>{
+                LOGGER.info(`Send email notification with - ${result}`);
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     public async updateOnePizza(event: any): Promise<Response> {
         try {
 
@@ -134,7 +163,7 @@ export class MainHandler {
 
             const pizzaId = await this._service.update(updateedPizza);
 
-            if(pizzaId instanceof Error){
+            if (pizzaId instanceof Error) {
                 throw new Error(pizzaId.message);
             }
 
@@ -177,7 +206,7 @@ export class MainHandler {
 
             const pizzaId = await this._service.delete(id);
 
-            if(pizzaId instanceof Error){
+            if (pizzaId instanceof Error) {
                 throw new Error(pizzaId.message);
             }
 
@@ -209,7 +238,6 @@ export class MainHandler {
             const insertedPizza = JSON.parse(event.body) as Pizza;
             if (
                 insertedPizza
-                && insertedPizza.id
                 && insertedPizza.title
                 && insertedPizza.price
             ) {
