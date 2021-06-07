@@ -57,15 +57,14 @@ export class PizzaService {
             await this._connection.connect();
 
             const productQuery = `INSERT INTO products (title, description, price) values ($1, $2, $3) RETURNING id`;
+            const stocksQuery = `INSERT INTO stocks select id, $1 FROM public.products where title = $2 RETURNING product_id`;
 
-            const productRes = await this._connection.query(productQuery, [pizza.title, pizza.description, pizza.price]);
-            const productId = productRes.rows[0].id;
+            const stocksRes = await Promise.all([
+                this._connection.query(productQuery, [pizza.title, pizza.description, pizza.price]),
+                this._connection.query(stocksQuery, [pizza.count, pizza.title])
+            ]);
 
-            const stocksQuery = `INSERT INTO stocks (product_id, count) values ($1, $2) RETURNING product_id`;
-
-            const stocksRes = await this._connection.query(stocksQuery, [productId, pizza.count]);
-
-            return stocksRes?.rows[0] || null;
+            return stocksRes[0]?.rows[0] || null;
         } catch (error) {
             LOGGER.error(`[PizzaService.insertOne()] - ${error}`);
             return new Error(error);
@@ -74,6 +73,31 @@ export class PizzaService {
         }
     }
 
+    public async insertMany(pizzas: Pizza[]): Promise<string | null | Error> {
+        try {
+            await this._connection.connect();
+            const results = await Promise.all(
+                pizzas.map(async (pizza) => {
+
+                    const productQuery = `INSERT INTO products (title, description, price) values ($1, $2, $3) RETURNING id`;
+                    const stocksQuery = `INSERT INTO stocks select id, $1 FROM public.products where title = $2 RETURNING product_id`;
+        
+                    const stocksRes = await Promise.all([
+                        this._connection.query(productQuery, [pizza.title, pizza.description, pizza.price]),
+                        this._connection.query(stocksQuery, [pizza.count, pizza.title])
+                    ]);
+                    return stocksRes;
+                })
+            );
+
+            return results.join(',') || null;
+        } catch (error) {
+            LOGGER.error(`[PizzaService.insertMany()] - ${error}`);
+            return new Error(error);
+        } finally {
+            await this._connection.end()
+        }
+    }
     public async update(pizza: Pizza): Promise<Pizza | null | Error> {
         try {
             await this._connection.connect();

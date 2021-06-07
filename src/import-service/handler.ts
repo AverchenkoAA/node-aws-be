@@ -76,12 +76,27 @@ export async function importFileParser(event: any) {
                 .on('end', () => {
                     console.log(results);
                     moveUploadedFile(s3, record);
+                    sendMessageToSQS(results);
                 });
         });
-
     }
-
     return response;
+}
+
+async function sendMessageToSQS(messages: string[]) {
+    const sqs = new AWS.SQS(/* { region: 'eu-west-1' } */);
+    console.log('Start SQS sending message')
+    console.log(process.env.SQS_URL)
+    await Promise.all(
+        messages.map((message) => {
+            sqs.sendMessage({
+                QueueUrl: process.env.SQS_URL || '',
+                MessageBody: JSON.stringify(message)
+            }, () => {
+                console.log(`Send to queue:`);
+                console.log(message);
+            }).promise();
+        }));
 }
 
 async function moveUploadedFile(s3: AWS.S3, record: any) {
