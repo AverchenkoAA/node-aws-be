@@ -8,6 +8,7 @@ const HEADER = {
 
 export async function importProductsFile(event: any) {
     const s3 = new AWS.S3({ region: 'eu-west-1' });
+    console.log(`Event - ${JSON.stringify(event)}`);
     const name = event.queryStringParameters.name;
     console.log(`Input name - ${name}`);
     let status = 200;
