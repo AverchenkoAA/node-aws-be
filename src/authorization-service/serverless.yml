@@ -39,7 +39,7 @@ functions:
           cors: true
           authorizer:
             name: basicTokenAuth
-            arn: arn:aws:lambda:eu-west-1:549923517243:function:node-aws-import-dev-importProductsFile
+            arn: arn:aws:lambda:eu-west-1:549923517243:function:node-aws-be-authorization-service-dev-basicAuthorizer
             resultTtlInSeconds: 0
             identitySource: method.request.header.Authorization
             type: token
