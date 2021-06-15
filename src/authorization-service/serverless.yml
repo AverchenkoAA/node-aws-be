@@ -34,3 +34,53 @@ package:
 functions:
   basicAuthorizer:
     handler: dist/handler.basicAuthorizer
+  preSignUpForPool:
+    handler: dist/handler.preSignUp
+    events:
+      - cognitoUserPool:
+          pool: pizza-user-pool
+          trigger: PreSignUp
+          existing: true
+
+resources:
+  Resources:
+    CognitoUserPool:
+      Type: "AWS::Cognito::UserPool"
+      Properties:
+        MfaConfiguration: OFF
+        UserPoolName: pizza-user-pool
+        AccountRecoverySetting: 
+          RecoveryMechanisms:
+            - Name: admin_only
+              Priority: 1
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 6
+            RequireLowercase: False
+            RequireNumbers: False
+            RequireSymbols: False
+            RequireUppercase: False
+    CognitoUserPoolClient:
+      Type: "AWS::Cognito::UserPoolClient"
+      Properties:
+        ClientName: pizza-user-pool-client
+        GenerateSecret: True
+        CallbackURLs: 
+          - https://dwgz1q98lr4ie.cloudfront.net/admin/products
+        AllowedOAuthFlowsUserPoolClient: True
+        AllowedOAuthFlows:
+          - code
+          - implicit
+        AllowedOAuthScopes:
+          - phone
+          - email
+          - openid
+          - profile
+        UserPoolId:
+          Ref: CognitoUserPool
+    UserPoolDomain: 
+      Type: AWS::Cognito::UserPoolDomain 
+      Properties:
+        UserPoolId: 
+          Ref: CognitoUserPool 
+        Domain: "pizza-user-pool-domain"

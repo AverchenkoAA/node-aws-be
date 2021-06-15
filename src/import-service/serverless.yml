@@ -79,11 +79,14 @@ functions:
           method: get
           cors: true
           authorizer:
-            name: basicTokenAuth
-            arn: arn:aws:lambda:eu-west-1:549923517243:function:node-aws-be-authorization-service-dev-basicAuthorizer
-            resultTtlInSeconds: 0
-            identitySource: method.request.header.Authorization
-            type: token
+            name: CognitoUserPoolAuthorizer
+            arn: arn:aws:cognito-idp:eu-west-1:549923517243:userpool/eu-west-1_pFrcmsnln
+          # authorizer:
+          #   name: basicTokenAuth
+          #   arn: arn:aws:lambda:eu-west-1:549923517243:function:node-aws-be-authorization-service-dev-basicAuthorizer
+          #   resultTtlInSeconds: 0
+          #   identitySource: method.request.header.Authorization
+          #   type: token
           request:
             parameters:
               querystrings:
@@ -109,3 +112,18 @@ functions:
         ResponseType: DEFAULT_4XX
         RestApiId: 
           Ref: ApiGatewayRestApi
+
+# resources:
+#   ApiGatewayAuthorizer:
+#     DependsOn:
+#       - ApiGatewayRestApi
+#     Type: AWS::ApiGateway::Authorizer
+#     Properties:
+#       Name: cognito-authorizer
+#       IdentitySource: method.request.header.Authorization
+#       RestApiId:
+#         Ref: ApiGatewayRestApi
+#       Type: COGNITO_USER_POOLS
+#       ProviderARNs:
+#         - Fn::GetAtt: [CognitoUserPool, Arn]
+      # arn: arn:aws:cognito-idp:eu-west-1:549923517243:userpool/eu-west-1_1vIP5LN7u

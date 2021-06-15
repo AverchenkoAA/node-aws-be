@@ -26,6 +26,12 @@ export async function basicAuthorizer(event: any, ctx: any, next: any) {
     }
 }
 
+export function preSignUp(event: any, ctx: any, next: any) {
+    console.log(event);
+    event.response.autoConfirmUser = true;
+    next(null, event);
+}
+
 function generatePolicy(principalId: any, resource: any, effect: any) {
     return {
         principalId: principalId,
