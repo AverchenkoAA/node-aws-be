@@ -21,6 +21,8 @@ provider:
   lambdaHashingVersion: 20201221
   profile: personalAccount
   region: eu-west-1
+  httpApi:
+    cors: true
 
 package:
   individually: true
@@ -32,14 +34,3 @@ package:
 functions:
   basicAuthorizer:
     handler: dist/handler.basicAuthorizer
-    events:
-      - http: 
-          path: token
-          method: get
-          cors: true
-          authorizer:
-            name: basicTokenAuth
-            arn: arn:aws:lambda:eu-west-1:549923517243:function:node-aws-be-authorization-service-dev-basicAuthorizer
-            resultTtlInSeconds: 0
-            identitySource: method.request.header.Authorization
-            type: token
